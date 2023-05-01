@@ -1,25 +1,59 @@
-import logo from './logo.svg';
+/* eslint-disable react/jsx-no-undef */
+import React, { useEffect, useState } from 'react';
 import './App.css';
+import Navbar from './Navbar';
+import Characters from './Characters';
+import Paginar from './Paginar';
+
 
 function App() {
+  const [characters, setCharacters] = useState([]);
+  const [info, setInfo] = useState({});
+
+  const url = "https://rickandmortyapi.com/api/character";
+
+  const fetchCaracters = (url) => {
+    fetch(url)
+      .then(response => response.json())
+      .then((data) => {
+        setCharacters(data.results);
+        setInfo(data.info);
+      })
+      .catch((error) => console.log(error));
+
+  };
+
+  const onPrevious = () => {
+    fetchCaracters(info.prev);
+  }
+
+  const onNext = () => {
+    fetchCaracters(info.next);
+  }
+
+  useEffect(() => {
+    fetchCaracters(url)
+  }, [])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <Navbar brand="Rich and Morty" />
+      <div className="container mt-5">
+
+        <Paginar prev={info.prev}
+          next={info.next}
+          onPrevious={onPrevious}
+          onNext={onNext}
+        />
+        <Characters characters={characters}
+        />
+        <Paginar prev={info.prev}
+          next={info.next}
+          onPrevious={onPrevious}
+          onNext={onNext} />
+      </div>
+    </>
+  )
 }
 
 export default App;
